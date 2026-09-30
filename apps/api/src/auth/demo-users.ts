@@ -1,0 +1,52 @@
+import { AuthUser, UserRole } from './auth.types';
+
+export const DEMO_USERS: AuthUser[] = [
+  {
+    id: '1f8fe6ea-1d57-48bd-b9ec-f0a1fd99f7d9',
+    name: 'Aarav Sharma',
+    phone: '9876543210',
+    email: 'aarav.sharma@dosje.gov.in',
+    role: UserRole.Inspector,
+    instituteId: 'inst-101',
+    district: 'East Delhi',
+    state: 'Delhi',
+  },
+  {
+    id: '7d7fd3c1-16bf-4405-a5ef-4f73842fe9f1',
+    name: 'Meera Nair',
+    phone: '9988776655',
+    email: 'meera.nair@dosje.gov.in',
+    role: UserRole.Official,
+    district: 'South Delhi',
+    state: 'Delhi',
+  },
+  {
+    id: '1aa98da7-8167-43a9-ad45-c0640e15bc2a',
+    name: 'Rahul Verma',
+    phone: '9123456780',
+    email: 'rahul.verma@ngo.org',
+    role: UserRole.NGOAdmin,
+    instituteId: 'inst-204',
+    district: 'Noida',
+    state: 'Uttar Pradesh',
+  },
+  {
+    id: '5a16c470-caa1-4d6d-9578-61562c6d68db',
+    name: 'Sonia Das',
+    phone: '9001122334',
+    email: 'sonia.das@gmail.com',
+    role: UserRole.Beneficiary,
+    instituteId: 'inst-408',
+    district: 'Kolkata',
+    state: 'West Bengal',
+  },
+  {
+    id: '27aab001-a267-47b2-b7ec-a32ee7dbb66f',
+    name: 'Rakesh Iyer',
+    phone: '9556677888',
+    email: 'rakesh.iyer@state.gov.in',
+    role: UserRole.Authority,
+    district: 'State HQ',
+    state: 'Maharashtra',
+  },
+];

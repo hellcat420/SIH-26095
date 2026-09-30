@@ -1,0 +1,33 @@
+name: dosje_mobile
+description: DoSJE Smart Monitoring & Inspection mobile app (Inspector / Official / NGO / Beneficiary)
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  connectivity_plus: ^7.3.1
+  geolocator: ^11.0.0
+  camera: ^0.10.5
+  image: ^4.1.7
+  flutter_secure_storage: ^9.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  image_picker: ^1.1.2
+  crypto: ^3.0.3
+  livekit_client: ^2.13.0
+  workmanager: ^0.10.10
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

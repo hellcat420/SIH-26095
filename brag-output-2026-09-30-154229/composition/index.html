@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>DoSJE Monitoring — Product Film</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f4f7fb;
+        --surface: #ffffff;
+        --ink: #111827;
+        --muted: #475569;
+        --blue: #1d4ed8;
+        --pale-blue: #eaf2ff;
+        --green: #198754;
+        --red: #dc3545;
+        --amber: #ffb703;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--paper);
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        padding: 100px 132px;
+        background: var(--paper);
+      }
+
+      .ambient {
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .ambient.orb {
+        width: 520px;
+        height: 520px;
+        right: -60px;
+        top: -130px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(29, 78, 216, 0.16), rgba(29, 78, 216, 0) 70%);
+      }
+
+      .ambient.rule {
+        width: 2px;
+        height: 760px;
+        left: 118px;
+        top: 160px;
+        background: linear-gradient(180deg, rgba(29, 78, 216, 0), rgba(29, 78, 216, 0.36), rgba(29, 78, 216, 0));
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--blue);
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 38px;
+        height: 4px;
+        border-radius: 4px;
+        background: var(--blue);
+        content: "";
+      }
+
+      .headline {
+        margin: 32px 0 0;
+        max-width: 860px;
+        color: var(--ink);
+        font-size: 86px;
+        font-weight: 650;
+        letter-spacing: -0.055em;
+        line-height: 1.05;
+      }
+
+      .support {
+        max-width: 680px;
+        margin: 26px 0 0;
+        color: var(--muted);
+        font-size: 32px;
+        line-height: 1.45;
+      }
+
+      .demo-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 2px solid rgba(29, 78, 216, 0.28);
+        border-radius: 999px;
+        background: #eef4ff;
+        color: #173b91;
+        font-size: 22px;
+        font-weight: 750;
+        letter-spacing: 0.09em;
+        padding: 12px 20px;
+        text-transform: uppercase;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--blue);
+      }
+
+      .scene-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Scene 1 — a real place becomes a map point. */
+      .opening-copy {
+        position: absolute;
+        left: 0;
+        top: 185px;
+        width: 850px;
+      }
+
+      .map-panel {
+        position: absolute;
+        right: 12px;
+        top: 94px;
+        width: 720px;
+        height: 760px;
+        overflow: hidden;
+        border: 2px solid #cfdaea;
+        border-radius: 40px;
+        background:
+          linear-gradient(30deg, transparent 49.6%, rgba(29, 78, 216, 0.1) 49.8%, rgba(29, 78, 216, 0.1) 50.2%, transparent 50.4%),
+          linear-gradient(145deg, transparent 39.7%, rgba(25, 135, 84, 0.14) 39.9%, rgba(25, 135, 84, 0.14) 40.3%, transparent 40.5%),
+          radial-gradient(ellipse at 65% 38%, #e3f0e9 0, #eaf2ff 64%, #edf2f9 100%);
+        box-shadow: 0 26px 80px rgba(36, 59, 92, 0.14);
+      }
+
+      .map-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.7;
+        background-image:
+          linear-gradient(rgba(83, 115, 155, 0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(83, 115, 155, 0.12) 1px, transparent 1px);
+        background-size: 58px 58px;
+      }
+
+      .map-road {
+        position: absolute;
+        height: 20px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.84);
+        box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.12);
+        transform-origin: left center;
+      }
+
+      .road-a {
+        left: -70px;
+        top: 430px;
+        width: 900px;
+        transform: rotate(-18deg);
+      }
+
+      .road-b {
+        left: 230px;
+        top: 70px;
+        width: 810px;
+        transform: rotate(62deg);
+      }
+
+      .road-c {
+        left: 40px;
+        top: 230px;
+        width: 640px;
+        transform: rotate(13deg);
+      }
+
+      .map-pin {
+        position: absolute;
+        left: 54%;
+        top: 43%;
+        display: grid;
+        width: 104px;
+        height: 104px;
+        place-items: center;
+        border: 7px solid #fff;
+        border-radius: 50% 50% 50% 10%;
+        background: var(--blue);
+        box-shadow: 0 18px 42px rgba(29, 78, 216, 0.32);
+        transform: rotate(-45deg);
+      }
+
+      .map-pin::after {
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        background: #fff;
+        content: "";
+      }
+
+      .pin-ring {
+        position: absolute;
+        left: 54%;
+        top: 43%;
+        width: 170px;
+        height: 170px;
+        border: 3px solid rgba(29, 78, 216, 0.33);
+        border-radius: 50%;
+        transform: translate(-19%, -19%);
+      }
+
+      .map-label {
+        position: absolute;
+        left: 58%;
+        top: 47%;
+        display: grid;
+        gap: 6px;
+        border: 2px solid rgba(29, 78, 216, 0.15);
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(31, 55, 88, 0.12);
+        padding: 16px 20px;
+      }
+
+      .map-label strong {
+        font-size: 24px;
+      }
+
+      .map-label span {
+        color: var(--muted);
+        font-size: 20px;
+      }
+
+      /* Scene 2 — native-looking inspector app, with demo data only. */
+      .capture-copy {
+        position: absolute;
+        left: 0;
+        top: 190px;
+        width: 700px;
+      }
+
+      .capture-proof {
+        display: grid;
+        gap: 16px;
+        margin-top: 48px;
+      }
+
+      .proof-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: #183b32;
+        font-size: 30px;
+        font-weight: 650;
+      }
+
+      .checkmark {
+        display: grid;
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        border-radius: 50%;
+        background: #dff4e8;
+        color: #176b3c;
+        font-size: 29px;
+        font-weight: 800;
+      }
+
+      .phone {
+        position: absolute;
+        right: 112px;
+        top: 20px;
+        width: 490px;
+        height: 860px;
+        overflow: hidden;
+        border: 14px solid #202938;
+        border-radius: 54px;
+        background: #faf9ff;
+        box-shadow: 0 34px 90px rgba(31, 45, 72, 0.25);
+      }
+
+      .phone-speaker {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        top: 13px;
+        width: 104px;
+        height: 18px;
+        border-radius: 20px;
+        background: #202938;
+        transform: translateX(-50%);
+      }
+
+      .phone-ui {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        gap: 20px;
+        padding: 58px 28px 30px;
+      }
+
+      .phone-topline {
+        color: var(--muted);
+        font-size: 20px;
+      }
+
+      .phone-title {
+        font-size: 29px;
+        font-weight: 700;
+      }
+
+      .phone-site {
+        display: grid;
+        gap: 10px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 8px 26px rgba(28, 43, 68, 0.09);
+        padding: 22px;
+      }
+
+      .phone-site strong {
+        font-size: 25px;
+        line-height: 1.2;
+      }
+
+      .phone-site span {
+        color: var(--muted);
+        font-size: 21px;
+      }
+
+      .gps-chip {
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        gap: 9px;
+        border-radius: 999px;
+        background: #e2f4e9;
+        color: #176b3c;
+        font-size: 20px;
+        font-weight: 700;
+        padding: 10px 14px;
+      }
+
+      .evidence-tile {
+        position: relative;
+        display: flex;
+        min-height: 195px;
+        align-items: flex-end;
+        overflow: hidden;
+        border-radius: 20px;
+        background:
+          linear-gradient(155deg, transparent 42%, rgba(25, 135, 84, 0.7) 42.5%, rgba(25, 135, 84, 0.7) 54%, transparent 54.5%),
+          linear-gradient(25deg, transparent 37%, rgba(255, 255, 255, 0.65) 37.5%, rgba(255, 255, 255, 0.65) 48%, transparent 48.5%),
+          linear-gradient(135deg, #bdd8f3, #e9ede3 50%, #a7c9ab);
+        padding: 18px;
+      }
+
+      .evidence-tile::before {
+        position: absolute;
+        right: 40px;
+        top: 35px;
+        width: 95px;
+        height: 100px;
+        border-radius: 10px 10px 3px 3px;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: -115px 30px 0 -12px rgba(255, 255, 255, 0.66), -55px -12px 0 -16px rgba(29, 78, 216, 0.45);
+        content: "";
+      }
+
+      .evidence-label {
+        position: relative;
+        z-index: 1;
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #172b43;
+        font-size: 20px;
+        font-weight: 700;
+        padding: 9px 13px;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 11px;
+        border-radius: 18px;
+        background: #fff;
+        padding: 17px 20px;
+      }
+
+      .checklist div {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #344155;
+        font-size: 20px;
+      }
+
+      .mini-check {
+        display: grid;
+        width: 27px;
+        height: 27px;
+        place-items: center;
+        border-radius: 7px;
+        background: #dff4e8;
+        color: #176b3c;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      /* Scene 3 — faithful dashboard labels with seeded sample values. */
+      .dashboard-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+
+      .dashboard-head h2 {
+        margin-top: 18px;
+        font-size: 60px;
+        font-weight: 650;
+        letter-spacing: -0.04em;
+      }
+
+      .dashboard-head .demo-tag {
+        margin-bottom: 6px;
+      }
+
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-top: 34px;
+      }
+
+      .stat-card {
+        display: flex;
+        min-height: 134px;
+        align-items: center;
+        justify-content: space-between;
+        border: 2px solid #e2eaf4;
+        border-radius: 24px;
+        background: var(--surface);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+        padding: 24px 32px;
+      }
+
+      .stat-card span {
+        max-width: 250px;
+        color: #344155;
+        font-size: 27px;
+        line-height: 1.2;
+      }
+
+      .stat-card strong {
+        font-size: 62px;
+        font-weight: 750;
+        letter-spacing: -0.05em;
+      }
+
+      .blue-num {
+        color: #1f6feb;
+      }
+
+      .green-num {
+        color: var(--green);
+      }
+
+      .red-num {
+        color: var(--red);
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1.55fr 0.9fr;
+        gap: 22px;
+        margin-top: 24px;
+      }
+
+      .panel {
+        border: 2px solid #e2eaf4;
+        border-radius: 24px;
+        background: var(--surface);
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+        padding: 24px;
+      }
+
+      .panel-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        color: var(--ink);
+        font-size: 29px;
+        font-weight: 700;
+      }
+
+      .map-badge {
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #173b91;
+        font-size: 20px;
+        font-weight: 650;
+        padding: 10px 16px;
+      }
+
+      .mini-map {
+        position: relative;
+        height: 355px;
+        overflow: hidden;
+        border: 2px solid #e2eaf4;
+        border-radius: 18px;
+        background:
+          linear-gradient(135deg, transparent 49.6%, rgba(29, 78, 216, 0.14) 49.8%, rgba(29, 78, 216, 0.14) 50.2%, transparent 50.4%),
+          linear-gradient(35deg, transparent 44.6%, rgba(25, 135, 84, 0.18) 44.8%, rgba(25, 135, 84, 0.18) 45.2%, transparent 45.4%),
+          linear-gradient(125deg, #eaf5ff, #e4ecfb 48%, #e6f7ef);
+      }
+
+      .mini-map::before {
+        position: absolute;
+        inset: 0;
+        opacity: 0.43;
+        background-image: radial-gradient(#88a5c4 2px, transparent 2px);
+        background-size: 32px 32px;
+        content: "";
+      }
+
+      .mini-pin {
+        position: absolute;
+        width: 27px;
+        height: 27px;
+        border: 4px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(22, 35, 55, 0.22);
+      }
+
+      .mini-pin.active {
+        background: var(--green);
+      }
+
+      .mini-pin.flagged {
+        background: var(--red);
+      }
+
+      .mini-pin.review {
+        background: var(--amber);
+      }
+
+      .dashboard-feed {
+        display: grid;
+        gap: 13px;
+      }
+
+      .feed-card {
+        display: grid;
+        gap: 9px;
+        border: 2px solid #e5ebf3;
+        border-radius: 16px;
+        background: #fff;
+        padding: 17px 19px;
+      }
+
+      .feed-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .feed-top strong {
+        font-size: 23px;
+      }
+
+      .status {
+        border-radius: 999px;
+        font-size: 18px;
+        font-weight: 750;
+        padding: 7px 11px;
+        white-space: nowrap;
+      }
+
+      .status.flagged {
+        background: #fff0f1;
+        color: #a82030;
+      }
+
+      .status.submitted {
+        background: #e7f5ec;
+        color: #176b3c;
+      }
+
+      .status.pending {
+        background: #fff5d9;
+        color: #604400;
+      }
+
+      .feed-meta {
+        color: var(--muted);
+        font-size: 19px;
+      }
+
+      .status-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        border: 2px solid #dfe7f1;
+        border-radius: 999px;
+        background: #fff;
+        color: #263449;
+        font-size: 24px;
+        font-weight: 650;
+        padding: 15px 21px;
+      }
+
+      .status-pill .dot {
+        width: 15px;
+        height: 15px;
+      }
+
+      /* Scene 4 — review is a visible human workflow, not an AI decision. */
+      .review-copy {
+        position: absolute;
+        left: 0;
+        top: 180px;
+        width: 780px;
+      }
+
+      .review-stack {
+        position: absolute;
+        right: 28px;
+        top: 84px;
+        display: grid;
+        width: 700px;
+        gap: 20px;
+      }
+
+      .review-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 16px;
+        min-height: 145px;
+        border: 2px solid #dfe7f1;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 15px 38px rgba(21, 39, 64, 0.1);
+        padding: 26px 30px;
+      }
+
+      .review-card h3 {
+        margin: 0;
+        font-size: 29px;
+      }
+
+      .review-card p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 22px;
+      }
+
+      .review-score {
+        display: grid;
+        width: 82px;
+        height: 82px;
+        place-items: center;
+        border-radius: 24px;
+        background: #eef4ff;
+        color: var(--blue);
+        font-size: 26px;
+        font-weight: 750;
+      }
+
+      .review-rail {
+        width: 4px;
+        height: 170px;
+        margin-left: 42px;
+        background: #c7d6ed;
+      }
+
+      .closing-mark {
+        position: absolute;
+        left: 0;
+        top: 110px;
+        display: grid;
+        width: 470px;
+        height: 470px;
+        place-items: center;
+        border: 2px solid #d9e4f3;
+        border-radius: 50%;
+        background: #eaf2ff;
+      }
+
+      .closing-mark svg {
+        width: 210px;
+        height: 210px;
+        filter: drop-shadow(0 16px 18px rgba(29, 78, 216, 0.18));
+      }
+
+      .closing-copy {
+        position: absolute;
+        left: 590px;
+        top: 210px;
+      }
+
+      .closing-copy h2 {
+        max-width: 970px;
+        margin: 20px 0 0;
+        font-size: 96px;
+        font-weight: 700;
+        letter-spacing: -0.06em;
+      }
+
+      .closing-copy p {
+        margin: 22px 0 0;
+        color: var(--muted);
+        font-size: 38px;
+      }
+
+      .closing-rule {
+        width: 130px;
+        height: 6px;
+        margin-top: 40px;
+        border-radius: 6px;
+        background: var(--blue);
+        transform-origin: left center;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-qfdc" id="root" data-composition-id="dosje-monitoring-brag" data-start="0" data-duration="20" data-width="1920" data-height="1080" data-fps="30">
+      <section data-hf-id="hf-jhzr" id="scene-field" class="clip" data-start="0" data-duration="3.5" data-track-index="0">
+        <div data-hf-id="hf-wua0" class="scene">
+          <div data-hf-id="hf-cxuf" class="ambient orb" id="field-orb"></div>
+          <div data-hf-id="hf-s80q" class="ambient rule"></div>
+          <div data-hf-id="hf-633e" class="scene-content" id="field-content">
+            <div data-hf-id="hf-850y" class="opening-copy">
+              <span data-hf-id="hf-pwp6" class="eyebrow">DoSJE · Field monitoring</span>
+              <h1 data-hf-id="hf-jhkt" class="headline">A field inspection starts somewhere.</h1>
+              <p data-hf-id="hf-e0zk" class="support">One place. One visit. A clearer picture of the work.</p>
+              <div data-hf-id="hf-3gwx" style="margin-top: 42px"><span data-hf-id="hf-d5ls" class="demo-tag"><i data-hf-id="hf-6bgx" class="dot"></i> DEMO DATA</span></div>
+            </div>
+            <div data-hf-id="hf-xb6a" class="map-panel" id="opening-map">
+              <div data-hf-id="hf-zhvz" class="map-grid"></div>
+              <div data-hf-id="hf-294i" class="map-road road-a" data-layout-allow-overflow=""></div>
+              <div data-hf-id="hf-chxd" class="map-road road-b" data-layout-allow-overflow=""></div>
+              <div data-hf-id="hf-5pbt" class="map-road road-c"></div>
+              <div data-hf-id="hf-02pa" class="pin-ring" id="pin-ring"></div>
+              <div data-hf-id="hf-r2n4" class="map-pin" id="opening-pin"></div>
+              <div data-hf-id="hf-e102" class="map-label" id="opening-label">
+                <strong data-hf-id="hf-0t02">DEMO · Service site</strong>
+                <span data-hf-id="hf-ygsw">Registered location</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-jhsi" id="scene-capture" class="clip" data-start="3.2" data-duration="4.2" data-track-index="0">
+        <div data-hf-id="hf-md34" class="scene">
+          <div data-hf-id="hf-p8ud" class="ambient orb" style="left: -210px; right: auto; top: 430px; background: radial-gradient(circle, rgba(25, 135, 84, 0.13), rgba(25, 135, 84, 0) 70%)"></div>
+          <div data-hf-id="hf-cioo" class="scene-content" id="capture-content">
+            <div data-hf-id="hf-g078" class="capture-copy">
+              <span data-hf-id="hf-eden" class="eyebrow">On the ground</span>
+              <h2 data-hf-id="hf-ubjm" class="headline">Evidence with its place in the story.</h2>
+              <p data-hf-id="hf-7gpp" class="support">The inspector flow checks location, captures evidence, and records the visit.</p>
+              <div data-hf-id="hf-mihv" class="capture-proof">
+                <div data-hf-id="hf-en2g" class="proof-row" id="proof-gps"><span data-hf-id="hf-lirx" class="checkmark">✓</span><span data-hf-id="hf-9qao">GPS checked.</span></div>
+                <div data-hf-id="hf-y0x7" class="proof-row" id="proof-evidence"><span data-hf-id="hf-d3lt" class="checkmark">✓</span><span data-hf-id="hf-gjv8">Evidence captured.</span></div>
+              </div>
+            </div>
+            <div data-hf-id="hf-ix2u" class="phone" id="phone-frame">
+              <div data-hf-id="hf-jcgo" class="phone-speaker"></div>
+              <div data-hf-id="hf-ycjv" class="phone-ui">
+                <div data-hf-id="hf-df83" class="phone-topline">DoSJE Monitoring</div>
+                <div data-hf-id="hf-38w1" class="phone-title">Inspection capture</div>
+                <div data-hf-id="hf-10t4" class="phone-site">
+                  <strong data-hf-id="hf-efoy">DEMO · Service site 04</strong>
+                  <span data-hf-id="hf-inin">Sample institute · Delhi</span>
+                  <span data-hf-id="hf-tx2e" class="gps-chip">✓ &#160; Within inspection radius</span>
+                </div>
+                <div data-hf-id="hf-kx5w" class="evidence-tile"><span data-hf-id="hf-gf8e" class="evidence-label">Photo evidence · DEMO</span></div>
+                <div data-hf-id="hf-g1yo" class="checklist">
+                  <div data-hf-id="hf-vai4"><span data-hf-id="hf-uzg8" class="mini-check">✓</span> Attendance register</div>
+                  <div data-hf-id="hf-ru4l"><span data-hf-id="hf-0g5s" class="mini-check">✓</span> Facility checklist</div>
+                  <div data-hf-id="hf-wald"><span data-hf-id="hf-z98p" class="mini-check">✓</span> GPS location recorded</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-0gor" id="scene-dashboard" class="clip" data-start="7.2" data-duration="6.1" data-track-index="0">
+        <div data-hf-id="hf-l661" class="scene">
+          <div data-hf-id="hf-6nhb" class="ambient orb" id="dashboard-orb"></div>
+          <div data-hf-id="hf-28py" class="scene-content" id="dashboard-content">
+            <div data-hf-id="hf-s05v" class="dashboard-head">
+              <div data-hf-id="hf-yeow">
+                <span data-hf-id="hf-0rgv" class="eyebrow">Department overview</span>
+                <h2 data-hf-id="hf-mac5">One clear view.</h2>
+              </div>
+              <span data-hf-id="hf-7nc8" class="demo-tag"><i data-hf-id="hf-0j5x" class="dot"></i> Synthetic sample data</span>
+            </div>
+            <div data-hf-id="hf-qwep" class="stat-row">
+              <article data-hf-id="hf-y3at" class="stat-card" id="stat-sites">
+                <span data-hf-id="hf-ewgy">Demo institutes</span><strong data-hf-id="hf-inu7" class="blue-num">06</strong>
+              </article>
+              <article data-hf-id="hf-pxw8" class="stat-card" id="stat-reports">
+                <span data-hf-id="hf-lcc4">Sample field reports</span><strong data-hf-id="hf-cu2v" class="green-num">05</strong>
+              </article>
+              <article data-hf-id="hf-csij" class="stat-card" id="stat-flagged">
+                <span data-hf-id="hf-pom4">Flagged demo sites</span><strong data-hf-id="hf-ia8q" class="red-num">02</strong>
+              </article>
+            </div>
+            <div data-hf-id="hf-mrlh" class="dashboard-grid">
+              <div data-hf-id="hf-fwrk" class="panel" id="dashboard-map-panel">
+                <div data-hf-id="hf-j8x7" class="panel-heading"><span data-hf-id="hf-yd5s">Institute locations</span><span data-hf-id="hf-zwrt" class="map-badge">6 shown · demo plot</span></div>
+                <div data-hf-id="hf-oem8" class="mini-map">
+                  <i data-hf-id="hf-65mk" class="mini-pin active" style="left: 22%; top: 66%"></i>
+                  <i data-hf-id="hf-ojgz" class="mini-pin flagged" style="left: 38%; top: 73%"></i>
+                  <i data-hf-id="hf-y9wy" class="mini-pin active" style="left: 57%; top: 28%"></i>
+                  <i data-hf-id="hf-ippt" class="mini-pin review" style="left: 75%; top: 63%"></i>
+                  <i data-hf-id="hf-wl44" class="mini-pin active" style="left: 68%; top: 42%"></i>
+                  <i data-hf-id="hf-gpvm" class="mini-pin flagged" style="left: 48%; top: 53%"></i>
+                </div>
+              </div>
+              <div data-hf-id="hf-ldfg" class="panel" id="dashboard-feed-panel">
+                <div data-hf-id="hf-0wjv" class="panel-heading"><span data-hf-id="hf-gu8d">Recent inspections</span></div>
+                <div data-hf-id="hf-g84d" class="dashboard-feed">
+                  <article data-hf-id="hf-ujzc" class="feed-card">
+                    <div data-hf-id="hf-5qgm" class="feed-top"><strong data-hf-id="hf-gtj4">DEMO · Service site 02</strong><span data-hf-id="hf-hmyp" class="status flagged">Flagged</span></div>
+                    <div data-hf-id="hf-ag5g" class="feed-meta">Sample report · Follow-up visible</div>
+                  </article>
+                  <article data-hf-id="hf-hmzk" class="feed-card">
+                    <div data-hf-id="hf-o2vu" class="feed-top"><strong data-hf-id="hf-fmm1">DEMO · Service site 01</strong><span data-hf-id="hf-29yx" class="status submitted">Submitted</span></div>
+                    <div data-hf-id="hf-8my2" class="feed-meta">Sample report · Location recorded</div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-1dmd" id="scene-review" class="clip" data-start="13.1" data-duration="4.1" data-track-index="0">
+        <div data-hf-id="hf-lkh2" class="scene">
+          <div data-hf-id="hf-1ekp" class="ambient orb" style="right: 430px; top: -270px; background: radial-gradient(circle, rgba(255, 183, 3, 0.14), rgba(255, 183, 3, 0) 70%)"></div>
+          <div data-hf-id="hf-do1q" class="scene-content" id="review-content">
+            <div data-hf-id="hf-5y2m" class="review-copy">
+              <span data-hf-id="hf-mrfz" class="eyebrow">A record that can be reviewed</span>
+              <h2 data-hf-id="hf-q6d9" class="headline">Status. Follow-up. Field reports.</h2>
+              <p data-hf-id="hf-8az4" class="support">Active, flagged, and pending-review samples stay visible to the official.</p>
+              <div data-hf-id="hf-fyqt" class="status-line">
+                <span data-hf-id="hf-1spr" class="status-pill"><i data-hf-id="hf-e3g8" class="dot" style="background: var(--green)"></i> Active</span>
+                <span data-hf-id="hf-astd" class="status-pill"><i data-hf-id="hf-qmng" class="dot" style="background: var(--red)"></i> Flagged</span>
+                <span data-hf-id="hf-59dk" class="status-pill"><i data-hf-id="hf-r6g0" class="dot" style="background: var(--amber)"></i> Pending review</span>
+              </div>
+            </div>
+            <div data-hf-id="hf-a3en" class="review-stack">
+              <article data-hf-id="hf-3dtj" class="review-card" id="review-flagged">
+                <div data-hf-id="hf-y7yw"><h3 data-hf-id="hf-x0p6">DEMO · Service site 02</h3><p data-hf-id="hf-fl5b">Sample report · Safety follow-up</p></div>
+                <span data-hf-id="hf-evmd" class="status flagged">Flagged</span>
+              </article>
+              <div data-hf-id="hf-9quw" class="review-rail" id="review-rail"></div>
+              <article data-hf-id="hf-apud" class="review-card" id="review-report">
+                <div data-hf-id="hf-x11t"><h3 data-hf-id="hf-3mwv">Inspection record</h3><p data-hf-id="hf-tw7v">Checklist complete · GPS attached</p></div>
+                <span data-hf-id="hf-og05" class="review-score">✓</span>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-7wkw" id="scene-close" class="clip" data-start="17" data-duration="3" data-track-index="0">
+        <div data-hf-id="hf-kdjz" class="scene">
+          <div data-hf-id="hf-wago" class="ambient orb" style="left: -180px; right: auto; top: -260px; width: 690px; height: 690px"></div>
+          <div data-hf-id="hf-u2ru" class="scene-content" id="close-content">
+            <div data-hf-id="hf-768q" class="closing-mark" id="closing-mark">
+              <svg data-hf-id="hf-djjk" viewBox="0 0 128 128" aria-hidden="true">
+                <path data-hf-id="hf-89u8" d="M64 10 108 27v31c0 29-18 49-44 61C38 107 20 87 20 58V27L64 10Z" fill="#1d4ed8" />
+                <path data-hf-id="hf-6peg" d="M64 25 94 37v21c0 21-12 35-30 45C46 93 34 79 34 58V37l30-12Z" fill="#f4f7fb" />
+                <path data-hf-id="hf-gtab" d="m49 62 10 10 22-24" fill="none" stroke="#198754" stroke-linecap="round" stroke-linejoin="round" stroke-width="8" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-ennd" class="closing-copy">
+              <span data-hf-id="hf-bo00" class="eyebrow">Field to oversight</span>
+              <h2 data-hf-id="hf-7whc">DoSJE Monitoring</h2>
+              <p data-hf-id="hf-nzit">Field work, in focus.</p>
+              <div data-hf-id="hf-z4dq" class="closing-rule" id="closing-rule"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <audio data-hf-id="hf-z4qf" id="music-bed" src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3" data-start="0" data-duration="20" data-track-index="20" data-volume="0.52" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0},{&quot;t&quot;:0.8,&quot;v&quot;:0.52},{&quot;t&quot;:18.5,&quot;v&quot;:0.52},{&quot;t&quot;:20,&quot;v&quot;:0}]}]}"></audio>
+      <audio data-hf-id="hf-6iop" id="pin-hit" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="1.35" data-duration="0.19" data-track-index="30" data-volume="0.38"></audio>
+      <audio data-hf-id="hf-9590" id="verify-click" src="assets/sfx/interface/click_003.ogg" data-start="4.75" data-duration="0.01" data-track-index="30" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-wwzu" id="brand-bell" src="assets/sfx/interface/bong_001.ogg" data-start="17.05" data-duration="0.13" data-track-index="30" data-volume="0.38"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo("#field-content", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.68, ease: "power3.out" }, 0.18);
+      tl.fromTo("#opening-map", { opacity: 0, x: 46, scale: 0.97 }, { opacity: 1, x: 0, scale: 1, duration: 0.82, ease: "power2.out" }, 0.28);
+      tl.fromTo("#opening-pin", { scale: 0.1, rotation: -24 }, { scale: 1, rotation: -45, duration: 0.52, ease: "back.out(1.55)" }, 1.08);
+      tl.fromTo("#pin-ring", { opacity: 0, scale: 0.65 }, { opacity: 1, scale: 1, duration: 0.65, ease: "power2.out" }, 1.25);
+      tl.fromTo("#opening-label", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.42, ease: "power1.out" }, 1.58);
+      tl.to("#field-content", { opacity: 0, y: -12, duration: 0.28, ease: "power2.in" }, 3.16);
+
+      tl.fromTo("#capture-content", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 3.35);
+      tl.fromTo("#phone-frame", { opacity: 0, y: 60, rotation: 2 }, { opacity: 1, y: 0, rotation: 0, duration: 0.62, ease: "power3.out" }, 3.36);
+      tl.fromTo("#proof-gps", { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: 0.42, ease: "power2.out" }, 4.03);
+      tl.fromTo("#proof-evidence", { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: 0.42, ease: "power2.out" }, 4.48);
+      tl.fromTo(".checklist div", { opacity: 0, x: 18 }, { opacity: 1, x: 0, duration: 0.34, stagger: 0.13, ease: "power2.out" }, 5.45);
+      tl.to("#capture-content", { opacity: 0, duration: 0.27, ease: "power1.in" }, 7.08);
+
+      tl.fromTo("#dashboard-content", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.52, ease: "power3.out" }, 7.32);
+      tl.fromTo("#stat-sites", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 7.72);
+      tl.fromTo("#stat-reports", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 7.92);
+      tl.fromTo("#stat-flagged", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.42, ease: "power2.out" }, 8.12);
+      tl.fromTo("#dashboard-map-panel", { opacity: 0, x: -26 }, { opacity: 1, x: 0, duration: 0.52, ease: "power2.out" }, 8.35);
+      tl.fromTo("#dashboard-feed-panel", { opacity: 0, x: 26 }, { opacity: 1, x: 0, duration: 0.52, ease: "power2.out" }, 8.46);
+      tl.fromTo(".mini-pin", { opacity: 0, scale: 0.25 }, { opacity: 1, scale: 1, duration: 0.35, stagger: 0.1, ease: "back.out(1.4)" }, 9.12);
+      tl.to("#dashboard-content", { opacity: 0, y: -10, duration: 0.27, ease: "power2.in" }, 13.02);
+
+      tl.fromTo("#review-content", { opacity: 0 }, { opacity: 1, duration: 0.36, ease: "sine.out" }, 13.28);
+      tl.fromTo("#review-flagged", { opacity: 0, x: 42 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 13.36);
+      tl.fromTo("#review-rail", { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.55, ease: "power2.out" }, 13.82);
+      tl.fromTo("#review-report", { opacity: 0, x: 42 }, { opacity: 1, x: 0, duration: 0.48, ease: "power2.out" }, 14.1);
+      tl.to("#review-content", { opacity: 0, duration: 0.25, ease: "power1.in" }, 16.86);
+
+      tl.fromTo("#close-content", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 17.13);
+      tl.fromTo("#closing-mark", { opacity: 0, scale: 0.86, x: -18 }, { opacity: 1, scale: 1, x: 0, duration: 0.72, ease: "power3.out" }, 17.2);
+      tl.fromTo(".closing-copy", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.65, ease: "power2.out" }, 17.42);
+      tl.fromTo("#closing-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.48, ease: "power3.out" }, 18.1);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["dosje-monitoring-brag"] = tl;
+    </script>
+  </body>
+</html>
